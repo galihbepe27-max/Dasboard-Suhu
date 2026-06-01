@@ -1,0 +1,132 @@
+/* ================= GLOBAL ================= */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+/* ================= HEADER ================= */
+h1 {
+  text-align: center;
+  margin-top: 25px;
+  margin-bottom: 30px;
+
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  color: #60a5fa;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+  width: 95%;
+  max-width: 1400px;
+  margin: auto;
+  text-align: center;
+}
+
+/* ================= CARDS ================= */
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+/* CARD SENSOR */
+.card {
+  width: 320px;
+  padding: 30px;
+
+  background: #1e293b;
+
+  border-left: 6px solid #3b82f6;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.4);
+
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+
+  box-shadow:
+    0 15px 35px rgba(59,130,246,0.25);
+}
+
+/* LABEL SENSOR */
+.card h2 {
+  color: #94a3b8;
+  font-size: 18px;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+/* NILAI SENSOR */
+.card p {
+  font-size: 58px;
+  font-weight: bold;
+  margin: 0;
+
+  color: #22c55e;
+}
+
+/* ================= CHART AREA ================= */
+.chart-container {
+  margin-top: 40px;
+
+  background: #1e293b;
+
+  padding: 25px;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Judul chart otomatis */
+.chart-container::before {
+  content: "GRAFIK MONITORING REALTIME";
+
+  display: block;
+
+  text-align: left;
+
+  margin-bottom: 20px;
+
+  color: #60a5fa;
+
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* CHART */
+canvas {
+  background: transparent;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+  .card {
+    width: 100%;
+  }
+
+  .card p {
+    font-size: 45px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+}
