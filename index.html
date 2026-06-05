@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Suhu Berbasis IoT</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- MQTT -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌡 MONITORING SUHU BERBASIS IoT</h1>
+            <p class="subtitle">Real-Time Temperature & Humidity Monitoring Dashboard</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="icon">🌡</div>
+                <h2>Suhu</h2>
+                <p id="temp">0°C</p>
+            </div>
+            <div class="card">
+                <div class="icon">💧</div>
+                <h2>Kelembapan</h2>
+                <p id="hum">0%</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Grafik Monitoring</h2>
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
