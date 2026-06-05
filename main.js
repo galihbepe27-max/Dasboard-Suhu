@@ -1,12 +1,7 @@
 // ================= KONFIGURASI MQTT =================
-// Gunakan broker yang support WSS (WebSocket Secure) untuk HTTPS page
-const BROKER_URL = 'wss://broker.emqx.io:8084/mqtt';  // EMQX broker support WSS
-
-// TOPIK - Sesuaikan dengan ESP32 Anda
+const BROKER_URL = 'wss://broker.emqx.io:8084/mqtt';
 const TOPIC_TEMP = 'esp32/suhu/iot_project_2026';
 const TOPIC_HUM = 'esp32/humidity/iot_project_2026';
-
-// Client ID unik untuk setiap session
 const CLIENT_ID = 'web_dashboard_' + Math.random().toString(36).substr(2, 9);
 
 // ================= VARIABEL GLOBAL =================
@@ -19,7 +14,7 @@ let currentHum = null;
 let tempReadings = [];
 let humReadings = [];
 let mqttClient = null;
-let isSimulating = false;
+let isConnected = false;
 
 // ================= INISIALISASI GRAFIK =================
 function initChart() {
@@ -199,7 +194,7 @@ function connectMQTT() {
     client.on('connect', () => {
         console.log('✅ Terhubung ke MQTT broker');
         updateConnectionStatus('connected', '✅ Terhubung ke MQTT (Real-time)');
-        isSimulating = false;
+        isConnected = true;
         
         // Subscribe ke kedua topik
         client.subscribe([TOPIC_TEMP, TOPIC_HUM], { qos: 0 }, (err) => {
@@ -237,7 +232,7 @@ function connectMQTT() {
     
     client.on('error', (err) => {
         console.error('❌ MQTT Error:', err);
-        updateConnectionStatus('disconnected', '❌ Error MQTT');
+        updateConnectionStatus('disconnected', '❌ Error MQTT - Cek koneksi ESP32');
     });
     
     client.on('reconnect', () => {
@@ -247,42 +242,10 @@ function connectMQTT() {
     
     client.on('offline', () => {
         console.log('📴 MQTT Offline');
-        if (!isSimulating) {
-            updateConnectionStatus('disconnected', '📴 MQTT Terputus');
-        }
+        updateConnectionStatus('disconnected', '📴 MQTT Terputus - ESP32 offline?');
     });
     
     return client;
-}
-
-// ================= SIMULASI DATA (FALLBACK) =================
-function startSimulation() {
-    if (isSimulating) return;
-    
-    isSimulating = true;
-    console.log('🎮 Mode simulasi aktif - menggunakan data dummy');
-    updateConnectionStatus('simulating', '🎮 Mode Simulasi (Demo)');
-    
-    let temp = 26.5;
-    let hum = 65.0;
-    
-    // Tampilkan data pertama
-    updateDisplay(temp.toFixed(1), hum.toFixed(1));
-    
-    // Update setiap 3 detik
-    setInterval(() => {
-        if (isSimulating) {
-            // Simulasi perubahan suhu (22-32°C) dan kelembapan (50-80%)
-            temp = 27 + Math.sin(Date.now() / 10000) * 4 + (Math.random() - 0.5) * 1;
-            hum = 65 + Math.cos(Date.now() / 8000) * 10 + (Math.random() - 0.5) * 3;
-            
-            // Batasi range
-            temp = Math.min(35, Math.max(20, temp));
-            hum = Math.min(85, Math.max(45, hum));
-            
-            updateDisplay(temp.toFixed(1), hum.toFixed(1));
-        }
-    }, 3000);
 }
 
 // ================= INISIALISASI =================
@@ -295,35 +258,20 @@ window.addEventListener('load', () => {
     
     initChart();
     
-    let mqttConnected = false;
-    
     try {
         mqttClient = connectMQTT();
         
-        // Timeout untuk fallback ke simulasi (15 detik)
+        // Tampilkan pesan menunggu data
         setTimeout(() => {
-            if (!mqttConnected && !isSimulating) {
-                console.log('⏱ Timeout koneksi MQTT (15 detik), beralih ke mode simulasi');
-                if (mqttClient && mqttClient.end) {
-                    mqttClient.end();
-                }
-                startSimulation();
+            if (!isConnected) {
+                console.log('⏳ Menunggu koneksi MQTT... Pastikan ESP32 menyala dan terhubung');
+                updateConnectionStatus('disconnected', '⏳ Menunggu ESP32 terhubung...');
             }
-        }, 15000);
-        
-        // Deteksi koneksi berhasil
-        const originalOn = mqttClient.on;
-        mqttClient.on = function(event, callback) {
-            if (event === 'connect') {
-                mqttConnected = true;
-                console.log('🎉 MQTT Connected! Menerima data real-time dari ESP32');
-            }
-            return originalOn.call(this, event, callback);
-        };
+        }, 3000);
         
     } catch (error) {
         console.error('❌ Gagal inisiasi MQTT:', error);
-        startSimulation();
+        updateConnectionStatus('disconnected', '❌ Gagal koneksi MQTT');
     }
 });
 
