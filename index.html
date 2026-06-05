@@ -15,23 +15,39 @@
         <div class="header">
             <h1>🌡 MONITORING SUHU BERBASIS IoT</h1>
             <p class="subtitle">Real-Time Temperature & Humidity Monitoring Dashboard</p>
+            <div id="connection-status" class="status-badge">⏳ Menghubungkan...</div>
         </div>
 
         <div class="cards">
             <div class="card">
                 <div class="icon">🌡</div>
                 <h2>Suhu</h2>
-                <p id="temp">0°C</p>
+                <p id="temp">--°C</p>
             </div>
             <div class="card">
                 <div class="icon">💧</div>
                 <h2>Kelembapan</h2>
-                <p id="hum">0%</p>
+                <p id="hum">--%</p>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>📊 Statistik Suhu</h3>
+                <div>Maks: <span id="temp-max">--</span>°C</div>
+                <div>Min: <span id="temp-min">--</span>°C</div>
+                <div>Rata-rata: <span id="temp-avg">--</span>°C</div>
+            </div>
+            <div class="stat-card">
+                <h3>💧 Statistik Kelembapan</h3>
+                <div>Maks: <span id="hum-max">--</span>%</div>
+                <div>Min: <span id="hum-min">--</span>%</div>
+                <div>Rata-rata: <span id="hum-avg">--</span>%</div>
             </div>
         </div>
 
         <div class="chart-container">
-            <h2>Grafik Monitoring</h2>
+            <h2>Grafik Monitoring (30 Data Terakhir)</h2>
             <canvas id="chart"></canvas>
         </div>
     </div>
