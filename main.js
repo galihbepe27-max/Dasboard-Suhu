@@ -1,8 +1,8 @@
 // ================= KONFIGURASI MQTT =================
-// Gunakan WebSocket Secure dari HiveMQ (port 8084 untuk WSS)
-const BROKER_URL = 'wss://broker.hivemq.com:8084';
+// GANTI dari WSS menjadi WS (non-SSL)
+const BROKER_URL = 'ws://broker.hivemq.com:8000';  // Port 8000 untuk WebSocket non-SSL
 
-// TOPIK - Sesuaikan dengan ESP32 Anda
+// TOPIK - Tetap sama
 const TOPIC_TEMP = 'esp32/suhu/iot_project_2026';
 const TOPIC_HUM = 'esp32/humidity/iot_project_2026';
 
@@ -122,15 +122,20 @@ function updateStatistics() {
 // ================= UPDATE STATUS KONEKSI =================
 function updateConnectionStatus(status, message) {
     const statusDiv = document.getElementById('connection-status');
-    statusDiv.textContent = message;
-    statusDiv.className = 'status-badge ' + status;
+    if (statusDiv) {
+        statusDiv.textContent = message;
+        statusDiv.className = 'status-badge ' + status;
+    }
 }
 
 // ================= UPDATE TAMPILAN DAN GRAFIK =================
 function updateDisplay(temp, hum) {
     // Update card
-    document.getElementById('temp').innerHTML = temp + '°C';
-    document.getElementById('hum').innerHTML = hum + '%';
+    const tempElement = document.getElementById('temp');
+    const humElement = document.getElementById('hum');
+    
+    if (tempElement) tempElement.innerHTML = temp + '°C';
+    if (humElement) humElement.innerHTML = hum + '%';
     
     // Simpan untuk statistik
     const tempNum = parseFloat(temp);
@@ -167,7 +172,7 @@ function updateDisplay(temp, hum) {
         humData.shift();
     }
     
-    chart.update();
+    if (chart) chart.update();
 }
 
 // ================= KONEKSI MQTT =================
