@@ -1,8 +1,8 @@
 // ================= KONFIGURASI MQTT =================
-// GANTI dari WSS menjadi WS (non-SSL)
-const BROKER_URL = 'ws://broker.hivemq.com:8000';  // Port 8000 untuk WebSocket non-SSL
+// Gunakan broker yang support WSS (WebSocket Secure) untuk HTTPS page
+const BROKER_URL = 'wss://broker.emqx.io:8084/mqtt';  // EMQX broker support WSS
 
-// TOPIK - Tetap sama
+// TOPIK - Sesuaikan dengan ESP32 Anda
 const TOPIC_TEMP = 'esp32/suhu/iot_project_2026';
 const TOPIC_HUM = 'esp32/humidity/iot_project_2026';
 
@@ -103,9 +103,13 @@ function updateStatistics() {
         const tempMin = Math.min(...tempReadings);
         const tempAvg = tempReadings.reduce((a, b) => a + b, 0) / tempReadings.length;
         
-        document.getElementById('temp-max').textContent = tempMax.toFixed(1);
-        document.getElementById('temp-min').textContent = tempMin.toFixed(1);
-        document.getElementById('temp-avg').textContent = tempAvg.toFixed(1);
+        const tempMaxEl = document.getElementById('temp-max');
+        const tempMinEl = document.getElementById('temp-min');
+        const tempAvgEl = document.getElementById('temp-avg');
+        
+        if (tempMaxEl) tempMaxEl.textContent = tempMax.toFixed(1);
+        if (tempMinEl) tempMinEl.textContent = tempMin.toFixed(1);
+        if (tempAvgEl) tempAvgEl.textContent = tempAvg.toFixed(1);
     }
     
     if (humReadings.length > 0) {
@@ -113,9 +117,13 @@ function updateStatistics() {
         const humMin = Math.min(...humReadings);
         const humAvg = humReadings.reduce((a, b) => a + b, 0) / humReadings.length;
         
-        document.getElementById('hum-max').textContent = humMax.toFixed(1);
-        document.getElementById('hum-min').textContent = humMin.toFixed(1);
-        document.getElementById('hum-avg').textContent = humAvg.toFixed(1);
+        const humMaxEl = document.getElementById('hum-max');
+        const humMinEl = document.getElementById('hum-min');
+        const humAvgEl = document.getElementById('hum-avg');
+        
+        if (humMaxEl) humMaxEl.textContent = humMax.toFixed(1);
+        if (humMinEl) humMinEl.textContent = humMin.toFixed(1);
+        if (humAvgEl) humAvgEl.textContent = humAvg.toFixed(1);
     }
 }
 
@@ -277,55 +285,33 @@ function startSimulation() {
     }, 3000);
 }
 
-// ================= CEK KONEKSI MQTT =================
-function testMQTTConnection() {
-    console.log('🧪 Testing MQTT koneksi ke', BROKER_URL);
-    
-    const testClient = mqtt.connect(BROKER_URL, {
-        clientId: 'test_' + Math.random().toString(36).substr(2, 5),
-        clean: true,
-        connectTimeout: 5000
-    });
-    
-    testClient.on('connect', () => {
-        console.log('✅ MQTT Broker tersedia!');
-        testClient.end();
-    });
-    
-    testClient.on('error', (err) => {
-        console.log('❌ MQTT Broker tidak dapat dijangkau:', err.message);
-    });
-}
-
 // ================= INISIALISASI =================
 window.addEventListener('load', () => {
     console.log('🚀 Dashboard Monitoring IoT dimulai');
     console.log('📡 Topik MQTT:');
     console.log('   - Suhu:', TOPIC_TEMP);
     console.log('   - Kelembapan:', TOPIC_HUM);
+    console.log('🔗 Broker URL:', BROKER_URL);
     
     initChart();
-    
-    // Test koneksi MQTT
-    testMQTTConnection();
     
     let mqttConnected = false;
     
     try {
         mqttClient = connectMQTT();
         
-        // Timeout untuk fallback ke simulasi (10 detik)
+        // Timeout untuk fallback ke simulasi (15 detik)
         setTimeout(() => {
             if (!mqttConnected && !isSimulating) {
-                console.log('⏱ Timeout koneksi MQTT (10 detik), beralih ke mode simulasi');
+                console.log('⏱ Timeout koneksi MQTT (15 detik), beralih ke mode simulasi');
                 if (mqttClient && mqttClient.end) {
                     mqttClient.end();
                 }
                 startSimulation();
             }
-        }, 10000);
+        }, 15000);
         
-        // Override untuk mendeteksi koneksi berhasil
+        // Deteksi koneksi berhasil
         const originalOn = mqttClient.on;
         mqttClient.on = function(event, callback) {
             if (event === 'connect') {
